@@ -1,0 +1,421 @@
+use("incidenciasMongo");
+db.createCollection("roles", {
+    capped: true,
+    size: 5000,
+    max: 50,
+    validator:{
+        $jsonSchema:{
+            bsonType: "object",
+            additionalProperties: false,
+            required : ['ID', 'email', 'password','Rname','Raccess'],
+            properties:{
+                ID:{
+                    bsonType: 'int',
+                    description : "El ID es un parametro obligatorio y debe ser un entero"
+                },
+                nickname:{  
+                    bsonType: 'string',
+                    description : "El nickname es un parametro obligatorio y debe ser un string"
+                },
+                email:{  
+                    bsonType: 'string',
+                    description : "El email es un parametro obligatorio y debe ser un string"
+                },
+                password:{  
+                    bsonType: 'string',
+                    description : "El password es un parametro obligatorio y debe ser un string"
+                },
+                Rname:{  
+                    bsonType: 'string',
+                    description : "El Rname es un parametro obligatorio y debe ser un string"
+                },
+                Raccess:{  
+                    bsonType: 'array',
+                    description : "El Raccess es un parametro obligatorio y debe ser un array"
+                }
+            }
+        }
+    }
+})
+
+use("incidenciasMongo");
+db.createCollection("usuario", {
+    capped: true,
+    size: 5000,
+    max: 50,
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            additionalProperties: false,
+            title: "usuario resportes",
+            required: [
+                "ID",
+                "incidencia",
+                "fecha",
+                "lugar_incidencia",
+                "descripcion"
+            ],
+            properties: {
+                ID: {
+                    bsonType: 'int',
+                },
+                incidencia: {
+                    bsonType: "object",
+                    required: ["nivel", "categoria"],
+                    properties: {
+                        nivel: {
+                            bsonType: "int",
+                            pattern: "^[1-10]$",
+                            description: "El nivel debe ser un numero entero entre 1 y 10, y es obligatorio",
+                        },
+                        categoria: {
+                            bsonType: "string",
+                            enum: ["leve", "moderada", "critica"],
+                            description: "La categoría debe ser 'leve', 'moderada' o 'critica'",
+                        },
+                    },
+                },
+                fecha: {
+                    bsonType: "date",
+                    description: "el tipo de dato es incorrecto",
+                },
+                lugar_incidencia: {
+                    bsonType: "string",
+                    description: "el tipo de dato es incorrecto",
+                },
+                descripcion: {
+                    bsonType: "string",
+                    description: "el tipo de dato es incorrecto",
+                },
+            },
+        },
+    },
+});
+
+use("incidenciasMongo");
+db.createCollection("salon", {
+    capped: true,
+    size: 5000,
+    max: 50,
+    validator: {
+        $jsonSchema: {
+        bsonType: "object",
+        title: "salones",
+        additionalProperties: false,
+        required: ["ID", "area", "nombre", "computadores"],
+            properties: {
+                ID:{
+                    bsonType: 'int',
+                },
+                area: {
+                    bsonType: "string",
+                    description: "el tipo de dato es incorrecto",
+                    enum: ["review1", "training", "review2"]
+                },
+                nombre: {
+                    bsonType: "string",
+                    description: "el tipo de dato es incorrecto",
+                    enum: ["apolo", "artemis", "sputnik","skylab","corvus","endor"]
+                },
+                computadores: {
+                bsonType: "array",
+                    items: {
+                        bsonType: "object",
+                        required: [
+                        "codigo",
+                        "codigo_teclado",
+                        "codigo_mouse",
+                        "codigo_audifonos"
+                        ],
+                        description: "datos requeridos",
+                        properties: {
+                            codigo: {
+                                bsonType: "string",
+                                description: "el tipo de dato es incorrecto",
+                            },
+                            codigo_teclado: {
+                                bsonType: "string",
+                                description: "el tipo de dato es incorrecto",
+                            },
+                            codigo_mouse: {
+                                bsonType: "string",
+                                description: "el tipo de dato es incorrecto",
+                            },
+                            codigo_audifonos: {
+                                bsonType: "string",
+                                description: "el tipo de dato es incorrecto",
+                            }
+                        },
+                    },
+                },
+            },
+        },
+    },
+});
+
+use("incidenciasMongo");
+db.createCollection("trainer", {
+    capped: true,
+    size: 5000,
+    max: 50,
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            additionalProperties: false,
+            required: [
+            "ID",
+            "nombre",
+            "email_personal",
+            "email_corporativo",
+            "telefono_movil",
+            "telefono_residencia",
+            "telefono_empresa",
+            "telefono_movil_empresarial"
+            ],
+            properties: {
+                ID:{
+                    bsonType: 'int',
+                },
+                nombre: {
+                    bsonType: "string",
+                    description: "el tipo de dato es incorrecto",
+                },
+                email_personal: {
+                    bsonType: "string",
+                    description: 'El email personal es obligatorio y debe ser válido',
+                    pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+                },
+                email_corporativo: {
+                    bsonType: "string",
+                    description: 'El email corporativo es obligatorio y debe ser válido',
+                    pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+                },
+                telefono_movil: {
+                    bsonType: "string",
+                    description: "El teléfono movil es obligatorio y debe cumplir con ciertas restricciones",
+                    pattern: "[+\\-0-9\\s]+$"
+                },
+                telefono_residencia: {
+                    bsonType: "string",
+                    description: "El teléfono de residencia es obligatorio y debe cumplir con ciertas restricciones",
+                    pattern: "[+\\-0-9\\s]+$"
+                },
+                telefono_empresa: {
+                    bsonType: "string",
+                    description: "El teléfono de empresa es obligatorio y debe cumplir con ciertas restricciones",
+                    pattern: "[+\\-0-9\\s]+$"
+                },
+                telefono_movil_empresarial: {
+                    bsonType: "string",
+                    description: "El teléfono movil empresarial es obligatorio y debe cumplir con ciertas restricciones",
+                    pattern: "[+\\-0-9\\s]+$"
+                }
+            },
+        },
+    },
+});
+
+
+
+use("incidenciasMongo");
+db.roles.insertMany([
+    {
+        ID: 1,
+        nickname: "Camper",
+        email: "camper@example.com",
+        password: "camper123",
+        Rname: "Normal Camper",
+        Raccess: ["salon"]
+    },
+    {
+        ID: 2,
+        nickname: "Trainer",
+        email: "trainer@example.com",
+        password: "trainer123",
+        Rname: "Trainer Dev",
+        Raccess: ["salon","usuario","trainer"]
+    }
+]);
+
+use("incidenciasMongo");
+db.salon.insertMany([
+    [
+        {
+          "ID": 1,
+          "area": "review1",
+          "nombre": "corvus",
+          "computadores": [
+            {
+              "codigo": "PC-001",
+              "codigo_teclado": "KB-001",
+              "codigo_mouse": "MS-001",
+              "codigo_audifonos": "HP-001"
+            }
+          ]
+        },
+        {
+          "ID": 2,
+          "area": "training",
+          "nombre": "apolo",
+          "computadores": [
+            {
+              "codigo": "PC-002",
+              "codigo_teclado": "KB-002",
+              "codigo_mouse": "MS-002",
+              "codigo_audifonos": "HP-002"
+            }
+          ]
+        },
+        {
+            "ID": 3,
+          "area": "review2",
+          "nombre": "endor",
+          "computadores": [
+            {
+              "codigo": "PC-003",
+              "codigo_teclado": "KB-003",
+              "codigo_mouse": "MS-003",
+              "codigo_audifonos": "HP-003"
+            }
+          ]
+        },
+        {
+            "ID": 4,
+          "area": "training",
+          "nombre": "artemis",
+          "computadores": [
+            {
+              "codigo": "PC-004",
+              "codigo_teclado": "KB-004",
+              "codigo_mouse": "MS-004",
+              "codigo_audifonos": "HP-004"
+            }
+          ]
+        },
+        {
+            "ID": 5,
+          "area": "review1",
+          "nombre": "skylab",
+          "computadores": [
+            {
+              "codigo": "PC-005",
+              "codigo_teclado": "KB-005",
+              "codigo_mouse": "MS-005",
+              "codigo_audifonos": "HP-005"
+            }
+          ]
+        }
+      ]
+]);
+
+use("incidenciasMongo");
+db.trainer.insertMany([
+    [
+        {
+            "ID": 1,
+          "nombre": "John Doe",
+          "email_personal": "john.doe@example.com",
+          "email_corporativo": "john.doe@corporation.com",
+          "telefono_movil": "+123456789",
+          "telefono_residencia": "+987654321",
+          "telefono_empresa": "+555555555",
+          "telefono_movil_empresarial": "+444444444"
+        },
+        {
+          "ID": 2,
+          "nombre": "Jane Smith",
+          "email_personal": "jane.smith@example.com",
+          "email_corporativo": "jane.smith@corporation.com",
+          "telefono_movil": "+111111111",
+          "telefono_residencia": "+222222222",
+          "telefono_empresa": "+333333333",
+          "telefono_movil_empresarial": "+666666666"
+        },
+        {
+            "ID": 3,
+          "nombre": "Michael Johnson",
+          "email_personal": "michael.johnson@example.com",
+          "email_corporativo": "michael.johnson@corporation.com",
+          "telefono_movil": "+777777777",
+          "telefono_residencia": "+888888888",
+          "telefono_empresa": "+999999999",
+          "telefono_movil_empresarial": "+000000000"
+        },
+        {
+            "ID": 4,
+          "nombre": "Emily Brown",
+          "email_personal": "emily.brown@example.com",
+          "email_corporativo": "emily.brown@corporation.com",
+          "telefono_movil": "+444444444",
+          "telefono_residencia": "+333333333",
+          "telefono_empresa": "+222222222",
+          "telefono_movil_empresarial": "+111111111"
+        },
+        {
+            "ID": 5,
+          "nombre": "David Martinez",
+          "email_personal": "david.martinez@example.com",
+          "email_corporativo": "david.martinez@corporation.com",
+          "telefono_movil": "+555555555",
+          "telefono_residencia": "+666666666",
+          "telefono_empresa": "+777777777",
+          "telefono_movil_empresarial": "+888888888"
+        }
+      ]
+]);
+
+use("incidenciasMongo");
+db.usuario.insertMany([
+    [
+        {
+            "ID": 1,
+          "incidencia": {
+            "nivel": 5,
+            "categoria": "moderada"
+          },
+          "fecha": ISODate("2023-08-22T12:00:00Z"),
+          "lugar_incidencia": "Salón A",
+          "descripcion": "Hubo una fuga de agua en el techo."
+        },
+        {
+            "ID":2,
+          "incidencia": {
+            "nivel": 3,
+            "categoria": "leve"
+          },
+          "fecha": ISODate("2023-08-20T10:30:00Z"),
+          "lugar_incidencia": "Oficina 101",
+          "descripcion": "La luz está parpadeando."
+        },
+        {
+            "ID": 3,
+          "incidencia": {
+            "nivel": 7,
+            "categoria": "critica"
+          },
+          "fecha": ISODate("2023-08-18T16:45:00Z"),
+          "lugar_incidencia": "Laboratorio B",
+          "descripcion": "Se ha producido un cortocircuito en un equipo."
+        },
+        {
+            "ID": 4,
+          "incidencia": {
+            "nivel": 2,
+            "categoria": "leve"
+          },
+          "fecha": ISODate("2023-08-17T14:15:00Z"),
+          "lugar_incidencia": "Sala de conferencias",
+          "descripcion": "El proyector no funciona correctamente."
+        },
+        {
+            "ID": 5,
+          "incidencia": {
+            "nivel": 4,
+            "categoria": "moderada"
+          },
+          "fecha": ISODate("2023-08-16T09:00:00Z"),
+          "lugar_incidencia": "Patio",
+          "descripcion": "Un árbol caído está bloqueando la entrada."
+        }
+      ]      
+]);
