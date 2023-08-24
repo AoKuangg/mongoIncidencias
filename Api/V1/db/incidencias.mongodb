@@ -1,33 +1,4 @@
 use('MongoIncidencias');
-db.createCollection("area", {
-    validator: {
-        $jsonSchema: {
-            bsonType: "object",
-            required: ["id", "nombre", "tipo"],
-            properties: {
-                id: { bsonType: "int", description: "'id_area' debe ser un entero y es requerido" },
-                nombre: { enum: ['apolo', 'artemis', 'sputnik', 'skylab', 'corvus', 'endor'], description: "'nombre_area' no existe" },
-                tipo: { enum: ['training', 'review1', 'review2'], description: "'tipo_area' no existe" }
-            }
-        }
-    }
-});
-
-db.createCollection("dispositivo", {
-    validator: {
-        $jsonSchema: {
-            bsonType: "object",
-            required: ["id", "marca", "modelo", "tipo", "idArea"],
-            properties: {
-                id: { bsonType: "int", description: "'id_dis' debe ser un entero y es requerido" },
-                marca: { bsonType: "string", description: "'marca_dis' debe ser un string" },
-                modelo: { bsonType: "string", description: "'modelo_dis' debe ser un string y es requerido" },
-                tipo: { enum: ['computador', 'teclado', 'mouse', 'diademas'], description: "'tipo_dis' no existe" },
-                idArea: { bsonType: "int", description: "'id_area' debe ser un entero y es requerido" }
-            }
-        }
-    }
-});
 
 db.createCollection("trainer", {
     validator: {
@@ -38,7 +9,7 @@ db.createCollection("trainer", {
                 cedula: { bsonType: "string", description: "'cc_tra' solo puede contener números y es requerido", pattern: "^[0-9]+$" },
                 nombre: { bsonType: "string", description: "'nombre_tra' debe ser un string y es requerido" },
                 telefono: { bsonType: "string", description: "'telef_tra' solo puede contener numeros y es requerido", pattern: "^[0-9]+$" },
-                emailPersonal: { bsonType: "string", description: "'email_pesonal' es requerido" },
+                emailPersonal: { bsonType: "string", description: "'email_personal' es requerido" },
                 emailCorp: { bsonType: "string", description: "'email_corp' es requerido" }
             }
         }
@@ -54,8 +25,27 @@ db.createCollection("incidencia", {
                 id: { bsonType: "int", description: "'id_inc' debe ser un entero y es requerido" },
                 descripcion: { bsonType: "string", description: "'descrip_inc' debe ser un string y es requerido" },
                 fecha: { bsonType: "date", description: "'fecha_reporte' debe ser una fecha valida y es requerida" },
-                categoria: { enum: ['hardware', 'software'], description: "'categoria_inc' solo puede ser de tipo ['hardware', 'software']" },
-                tipo: { enum: ['leve', 'moderada', 'critica'], description: "'tipo_inc' solo puede ser de tipo ['leve', 'moderada', 'critica']" }
+                categoria: { enum: ['hardware', 'software'], description: "'categoria_inc' solo puede ser 'hardware' o 'software'" },
+                tipo: { enum: ['leve', 'moderada', 'critica'], description: "'tipo_inc' solo puede ser 'leve', 'moderada' o 'critica'" },
+                lugar: {
+                    bsonType: "object",
+                    required: ["nombre", "tipo"],
+                    properties: {
+                        nombre: { enum: ['apolo', 'artemis', 'sputnik', 'skylab', 'corvus', 'endor'], description: "'nombre_area' no existe" },
+                        tipo: { enum: ['training', 'review1', 'review2'], description: "'tipo_area' no existe" }
+                    }
+                },
+                dispositivo: {
+                    bsonType: "object",
+                    required: ["id", "marca", "modelo", "tipo", "idArea"],
+                    properties: {
+                        id: { bsonType: "string", description: "'id_dis' debe ser un string y es requerido" },
+                        marca: { bsonType: "string", description: "'marca_dis' debe ser un string" },
+                        modelo: { bsonType: "string", description: "'modelo_dis' debe ser un string y es requerido" },
+                        tipo: { enum: ['computador', 'teclado', 'mouse', 'diademas'], description: "'tipo_dis' no existe" },
+                        idArea: { bsonType: "string", description: "'id_area' debe ser un string y es requerido" }
+                    }
+                }
             }
         }
     }
@@ -69,7 +59,7 @@ db.createCollection("usuario", {
             properties: {
                 cedula: { bsonType: "string", description: "'cc_usu' solo puede contener números y es requerido", pattern: "^[0-9]+$" },
                 nombre: { bsonType: "string", description: "'nombre_usu' debe ser un string y es requerido" },
-                rol: { bsonType: "array", description: "'rol_usu' es requerido", items: { bsonType: "int" } },
+                rol: { enum: ['admin', 'trainer', 'camper'], description: "'rol' debe ser 'admin', 'trainer' o 'camper' y es requerido" },
                 permisos: {
                     bsonType: 'object',
                     description: "Debe ingresar los permisos",
@@ -80,82 +70,40 @@ db.createCollection("usuario", {
     }
 });
 
-db.createCollection("rol", {
-    validator: {
-        $jsonSchema: {
-            bsonType: "object",
-            required: ["id", "nombre"],
-            properties: {
-                id: { bsonType: "int", description: "'id_rol' debe ser un entero y es requerido" },
-                nombre: { bsonType: "string", description: "'nombre_usu' debe ser un string y es requerido", pattern: "^[a-zA-Z ]+$" },
-            }
-        }
+use('MongoIncidencias');
+db.trainer.insertOne({
+    "cedula": "123456789",
+    "nombre": "Juan Pérez",
+    "telefono": "987654321",
+    "emailPersonal": "juan@example.com",
+    "emailCorp": "juan.perez@empresa.com"
+});
+
+db.incidencia.insertOne({
+    "id": 1,
+    "descripcion": "Problema con la conexión a internet",
+    "fecha": ISODate("2023-08-24T10:30:00Z"),
+    "categoria": "software",
+    "tipo": "moderada",
+    "lugar": {
+        "nombre": "apolo",
+        "tipo": "training"
+    },
+    "dispositivo": {
+        "id": "D123",
+        "marca": "HP",
+        "modelo": "Pavilion",
+        "tipo": "computador",
+        "idArea": "A001"
     }
 });
 
-
-db.rol.insertMany([
-  {
-      id: 1,
-      nombre: "admin"
-  },
-  {
-      id: 2,
-      nombre: "usuario"
-  }
-])
-
-db.usuario.insertMany([
-  {
-      cedula: "222222222",
-      nombre: "Juan",
-      rol: [1],
-      permisos: {
-          "/area": ["1.0.0"],
-          "/dispositivo": ["1.0.0"],
-          "/incidencia": ["1.0.0"],
-          "/trainer": ["1.0.0"]
-      }
-  },
-  {
-      cedula: "111111111",
-      nombre: "Camilo",
-      rol: [2],
-      permisos: {
-          "/area": ["1.0.0"]
-      }
-  }
-])
-
-db.area.insertMany([
-  {
-      id: 1,
-      nombre: "apolo",
-      tipo: "training"
-  },
-  {
-      id: 2,
-      nombre: "artemis",
-      tipo: "training"
-  },
-  {
-      id: 3,
-      nombre: "sputnik",
-      tipo: "training"
-  },
-  {
-      id: 4,
-      nombre: "skylab",
-      tipo: "training"
-  },
-  {
-      id: 5,
-      nombre: "corvus",
-      tipo: "review1"
-  },
-  {
-      id: 6,
-      nombre: "endor",
-      tipo: "review2"
-  }
-]);
+db.usuario.insertOne({
+    "cedula": "987654321",
+    "nombre": "María García",
+    "rol": "admin",
+    "permisos": {
+        "/admin": ["read", "write"],
+        "/usuarios": ["read", "write"]
+    }
+});
